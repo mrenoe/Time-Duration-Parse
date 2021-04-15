@@ -1,4 +1,4 @@
-package Time::Duration::Parse;
+package TOC::Time::Duration::Parse;
 
 use 5.006;
 use strict;
@@ -10,13 +10,18 @@ our @EXPORT = qw( parse_duration );
 
 # This map is taken from Cache and Cache::Cache
 # map of expiration formats to their respective time in seconds
-my %Units = ( map(($_,             1), qw(s second seconds sec secs)),
-              map(($_,            60), qw(m minute minutes min mins)),
-              map(($_,         60*60), qw(h hr hrs hour hours)),
-              map(($_,      60*60*24), qw(d day days)),
-              map(($_,    60*60*24*7), qw(w week weeks)),
-              map(($_,   60*60*24*30), qw(M month months mo mon mons)),
-              map(($_,  60*60*24*365), qw(y year years)) );
+my %Units = (
+    map( ( $_, 1 ),           qw(µs us microsecond microseconds µsec µsecs) ),
+    map( ( $_, 1000 ),        qw(ms millisecond milliseconds msec msecs) ),
+    map( ( $_, 1000 * 1000 ), qw(s second seconds sec secs) ),
+    map( ( $_, 1000 * 1000 * 60 ),           qw(m minute minutes min mins) ),
+    map( ( $_, 1000 * 1000 * 60 * 60 ),      qw(h hr hrs hour hours) ),
+    map( ( $_, 1000 * 1000 * 60 * 60 * 24 ), qw(d day days) ),
+    map( ( $_, 1000 * 1000 * 60 * 60 * 24 * 7 ), qw(w week weeks) ),
+    map( ( $_, 1000 * 1000 * 60 * 60 * 24 * 30 ),
+        qw(M month months mo mon mons) ),
+    map( ( $_, 1000 * 1000 * 60 * 60 * 24 * 365 ), qw(y year years) )
+);
 
 sub parse_duration {
     my $timespec = shift;
@@ -25,7 +30,7 @@ sub parse_duration {
     $timespec =~ s/^\s*\+\s*//;
 
     # Treat a plain number as a number of seconds (and parse it later)
-    if ($timespec =~ /^\s*(-?\d+(?:[.,]\d+)?)\s*$/) {
+    if ( $timespec =~ /^\s*(-?\d+(?:[.,]\d+)?)\s*$/ ) {
         $timespec = "$1s";
     }
 
@@ -34,19 +39,22 @@ sub parse_duration {
     $timespec =~ s/\b(\d+):(\d\d)\b/$1h $2m/g;
 
     my $duration = 0;
-    while ($timespec =~ s/^\s*(-?\d+(?:[.,]\d+)?)\s*([a-zA-Z]+)(?:\s*(?:,|and)\s*)*//i) {
-        my($amount, $unit) = ($1, $2);
+    while ( $timespec =~
+        s/^\s*(-?\d+(?:[.,]\d+)?)\s*([a-zA-Z]+)(?:\s*(?:,|and)\s*)*//i )
+    {
+        my ( $amount, $unit ) = ( $1, $2 );
         $unit = lc($unit) unless length($unit) == 1;
 
-        if (my $value = $Units{$unit}) {
+        if ( my $value = $Units{$unit} ) {
             $amount =~ s/,/./;
             $duration += $amount * $value;
-        } else {
+        }
+        else {
             Carp::croak "Unknown timespec: $1 $2";
         }
     }
 
-    if ($timespec =~ /\S/) {
+    if ( $timespec =~ /\S/ ) {
         Carp::croak "Unknown timespec: $timespec";
     }
 
