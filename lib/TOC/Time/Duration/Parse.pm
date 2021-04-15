@@ -1,3 +1,7 @@
+#######
+#Forked from: https://github.com/neilb/Time-Duration-Parse
+#Currently hosted on https://github.com/mrenoe/Time-Duration-Parse
+###
 package TOC::Time::Duration::Parse;
 
 use 5.006;
