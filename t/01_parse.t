@@ -4,6 +4,11 @@ use Test::More 0.88;
 use TOC::Time::Duration::Parse;
 
 my @GOOD_TIME_SPECS = (
+    [ '3ms',           3000 ],
+    [ '4milliseconds', 4000 ],
+    [ '5millisecond',  5000 ],
+    [ '5msecs',        5000 ],
+
     [ '3',                       3000000 ],
     [ '3 seconds',               3000000 ],
     [ '3 Seconds',               3000000 ],
